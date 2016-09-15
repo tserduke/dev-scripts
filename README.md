@@ -28,9 +28,9 @@ Lints all Haskell sources it could find.
 3. Calls [HLint] via stack on constructed directory list.
 
 ### publish
-Checks the project has no warnings, builds fine, passes its tests and has an up-to-date changelog. Then publishes and tags the release.
+Checks the project has no warnings, builds fine, passes its tests and has an up-to-date changelog. If all is good publishes and tags the release.
 
-1. Executes [lint](#lint).
+1. Runs [lint](#lint).
 1. Checks that latest version number in `changelog.md` equals the one in root cabal file.
 1. Checks the date of latest version in `changelog.md`.
 1. Checks there are no uncommitted files.
