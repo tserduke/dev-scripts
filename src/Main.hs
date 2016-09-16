@@ -5,14 +5,16 @@ import Development.Shake.FilePath
 
 import Data.Maybe (fromMaybe)
 import Data.Yaml (FromJSON, decodeFile)
-import Distribution.PackageDescription (allBuildInfo, hsSourceDirs, packageDescription)
+import Distribution.PackageDescription (allBuildInfo, hsSourceDirs)
+import Distribution.PackageDescription.Configuration (flattenPackageDescription)
 import Distribution.PackageDescription.Parse (readPackageDescription)
 import Distribution.Verbosity (silent)
 import GHC.Generics (Generic)
 
 
 main :: IO ()
-main = shakeArgs shakeOptions $
+main = shakeArgs shakeOptions $ do
+    want ["lint"]
     phony "lint" $ do
         StackConfig {..} <- withNeed readYaml "stack.yaml"
         let patterns = map (</> "*.cabal") $ fromMaybe ["."] packages
@@ -24,7 +26,7 @@ main = shakeArgs shakeOptions $
 
 srcDirs :: FilePath -> IO [FilePath]
 srcDirs file = dirs <$> readPackageDescription silent file where
-    dirs = concatMap hsSourceDirs . allBuildInfo . packageDescription
+    dirs = concatMap hsSourceDirs . allBuildInfo . flattenPackageDescription
 
 
 data StackConfig = StackConfig
