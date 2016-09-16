@@ -1,23 +1,33 @@
 module Main (main) where
 
-import Data.Maybe
-import Data.Yaml
 import Development.Shake
-import GHC.Generics
+import Development.Shake.FilePath
+
+import Data.Maybe (fromMaybe)
+import Data.Yaml (FromJSON, decodeFile)
+import Distribution.PackageDescription (allBuildInfo, hsSourceDirs, packageDescription)
+import Distribution.PackageDescription.Parse (readPackageDescription)
+import Distribution.Verbosity (silent)
+import GHC.Generics (Generic)
 
 
 main :: IO ()
 main = shakeArgs shakeOptions $
     phony "lint" $ do
-        config <- readYaml "stack.yaml" :: Action StackConfig
-        need []
-        cmd  "echo 1"
+        StackConfig {..} <- readYaml "stack.yaml"
+        cabals <- getDirectoryFiles "" $ map (</> "*.cabal") packages
+        dirs <- concat <$> mapM srcDirs cabals
+        cmd "stack exec hlint --" dirs
+
+
+srcDirs :: FilePath -> Action [FilePath]
+srcDirs file = need [file] >> liftIO (dirs <$> readPackageDescription silent file) where
+    dirs = concatMap hsSourceDirs . allBuildInfo . packageDescription
 
 
 data StackConfig = StackConfig
     { packages :: [FilePath]
     } deriving (Generic, FromJSON)
-
 
 readYaml :: (FromJSON a) => FilePath -> Action a
 readYaml file = need [file] >> liftIO (unwrap <$> decodeFile file) where
