@@ -14,21 +14,27 @@ import GHC.Generics (Generic)
 main :: IO ()
 main = shakeArgs shakeOptions $
     phony "lint" $ do
-        StackConfig {..} <- readYaml "stack.yaml"
-        cabals <- getDirectoryFiles "" $ map (</> "*.cabal") packages
-        dirs <- concat <$> mapM srcDirs cabals
+        StackConfig {..} <- withNeed readYaml "stack.yaml"
+        let patterns = map (</> "*.cabal") $ fromMaybe ["."] packages
+        cabals <- getDirectoryFiles "" patterns
+        dirs <- concat <$> mapM (withNeed srcDirs) cabals
+        putNormal $ show dirs
         cmd "stack exec hlint --" dirs
 
 
-srcDirs :: FilePath -> Action [FilePath]
-srcDirs file = need [file] >> liftIO (dirs <$> readPackageDescription silent file) where
+srcDirs :: FilePath -> IO [FilePath]
+srcDirs file = dirs <$> readPackageDescription silent file where
     dirs = concatMap hsSourceDirs . allBuildInfo . packageDescription
 
 
 data StackConfig = StackConfig
-    { packages :: [FilePath]
+    { packages :: Maybe [FilePath]
     } deriving (Generic, FromJSON)
 
-readYaml :: (FromJSON a) => FilePath -> Action a
-readYaml file = need [file] >> liftIO (unwrap <$> decodeFile file) where
+readYaml :: (FromJSON a) => FilePath -> IO a
+readYaml file = unwrap <$> decodeFile file where
     unwrap = fromMaybe (error $ "readYaml " ++ file)
+
+
+withNeed :: (FilePath -> IO a) -> FilePath -> Action a
+withNeed func file = need [file] >> liftIO (func file)
