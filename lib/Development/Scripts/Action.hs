@@ -2,6 +2,7 @@
 
 module Development.Scripts.Action
     ( lint
+    , build
     , checkChangelog
     ) where
 
@@ -30,6 +31,11 @@ lint = do
     cmd (Traced "hlint") "stack exec hlint --" dirs
 
 
+build :: Action ()
+build = do
+    return ()
+
+
 checkChangelog :: Action ()
 checkChangelog = do
     [cabalFile] <- getDirectoryFiles "" ["*.cabal"]
@@ -42,3 +48,4 @@ checkChangelog = do
     time <- liftIO getCurrentTime
     let today = formatTime defaultTimeLocale "(%Y-%m-%d)" time
     liftIO $ assertEqual "Changelog Date" today date
+    putNormal "Changelog OK"

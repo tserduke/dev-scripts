@@ -41,18 +41,18 @@ Lints all Haskell sources it could find.
 2. Creates a directory list from all `hs-source-dirs` fields in found cabal files.
 3. Calls [HLint] via stack on constructed directory list.
 
-### check-changelog
-Checks `changelog.md`.
-
-1. Checks the latest version number equals the one in root cabal file.
-2. Checks the date of latest version is current.
-
-### check-build
+### build
 Builds all projects, tests, benchmarks and documentation failing on warnings and runs tests.
 ```shell
 stack clean
 stack build --test --bench --haddock --ghc-options "-Werror" --no-run-benchmarks
 ```
+
+### check-changelog
+Checks `changelog.md`.
+
+1. Checks the latest version number equals the one in root cabal file.
+2. Checks the date of latest version is current.
 
 ### publish
 If all is good publishes and tags the release.
