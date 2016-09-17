@@ -28,7 +28,7 @@ doLint = do
     let patterns = map (</> "*.cabal") $ fromMaybe ["."] packages
     cabals <- getDirectoryFiles "" patterns
     dirs <- concat <$> mapM (withNeed srcDirs) cabals
-    cmd "stack exec hlint --" dirs
+    cmd (Traced "hlint") "stack exec hlint --" dirs
 
 
 execute :: Action a -> IO ()
