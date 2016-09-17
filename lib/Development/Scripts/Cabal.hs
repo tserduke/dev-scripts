@@ -1,10 +1,11 @@
 module Development.Scripts.Cabal
     ( readCabal
     , packageVersion
+    , showVersion
     , srcDirs
     ) where
 
-import Data.Version (Version)
+import Data.Version (Version, showVersion)
 import Distribution.Package (pkgVersion)
 import Distribution.PackageDescription (GenericPackageDescription, allBuildInfo,
     hsSourceDirs, package, packageDescription)
