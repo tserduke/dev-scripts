@@ -60,9 +60,9 @@ Checks `changelog.md`.
 If all is good publishes and tags the release.
 
 1. Checks [lint](#lint), [build](#check-build) and [changelog](#check-changelog).
-1. Checks if there are no uncommitted files.
-1. `stack dist`
-1. `stack publish`
+1. Checks if there are no uncommitted files. Add `/.shake` to `.gitignore`.
+1. `stack sdist`
+1. `stack upload .`
 1. `hg tag vx.y.z` - tags the repository with current version number.
 
 

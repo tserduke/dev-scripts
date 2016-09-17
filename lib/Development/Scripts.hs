@@ -35,9 +35,13 @@ execute name = shake shakeOptions $ want [name] >> rules
 rules :: Rules ()
 rules = do
     phony "publish" $ do
-        need ["lint", "check-changelog"]
+        need ["lint", "build", "check-changelog"]
         Stdout files <- cmd "hg st"
         assertEqual "Uncommited Files" "" files
+        () <- cmd (Traced "sdist") "stack sdist"
+        () <- cmd (Traced "upload") "stack upload ."
+        version <- getVersion
+        () <- cmd "hg tag" ("v" ++ version)
         putNormal "Published"
 
     phony "lint" $ do
@@ -50,14 +54,13 @@ rules = do
 
     phony "build" $ do
         () <- cmd (Traced "clean") "stack clean"
-        () <- cmd (Traced "build") "stack build --test --bench --haddock --ghc-options \"-Werror\" --no-run-benchmarks"
+        () <- cmd (Traced "build") ("stack build --test --bench --haddock " ++
+            "--ghc-options \"-Werror\" --no-run-benchmarks")
         () <- cmd "rm -rf src/highlight.js src/style.css"
         putNormal "Build Successful"
 
     phony "check-changelog" $ do
-        [cabalFile] <- getDirectoryFiles "" ["*.cabal"]
-        package <- withNeed readCabal cabalFile
-        let version = showVersion $ packageVersion package
+        version <- getVersion
         changelog <- withNeed readMarkdown "changelog.md"
         let (Header 2 header) = index changelog 1
         let [version', date] = map T.unpack $ T.words $ inlinesText header
@@ -66,3 +69,9 @@ rules = do
         let today = formatTime defaultTimeLocale "(%Y-%m-%d)" time
         assertEqual "Changelog Date" today date
         putNormal "Changelog OK"
+
+getVersion :: Action String
+getVersion = do
+    [cabalFile] <- getDirectoryFiles "" ["*.cabal"]
+    package <- withNeed readCabal cabalFile
+    return $ showVersion $ packageVersion package
