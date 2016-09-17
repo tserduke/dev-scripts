@@ -15,6 +15,7 @@ import Development.Scripts.Stack
 
 import Data.Maybe (fromMaybe)
 import Data.Sequence (index)
+import Data.Time (defaultTimeLocale, formatTime, getCurrentTime)
 import Test.HUnit (assertEqual)
 import qualified Data.Text as T
 
@@ -37,5 +38,7 @@ checkChangelog = do
     changelog <- withNeed readMarkdown "changelog.md"
     let (Header 2 header) = index changelog 1
     let [version', date] = map T.unpack $ T.words $ inlinesText header
-    liftIO $ assertEqual "Package Version" version version'
-    return ()
+    liftIO $ assertEqual "Changelog Version" version version'
+    time <- liftIO getCurrentTime
+    let today = formatTime defaultTimeLocale "(%Y-%m-%d)" time
+    liftIO $ assertEqual "Changelog Date" today date

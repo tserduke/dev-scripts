@@ -36,6 +36,7 @@ library
                         HUnit,
                         shake,
                         text,
+                        time,
                         yaml
     -- need executable
     build-depends:      hlint
