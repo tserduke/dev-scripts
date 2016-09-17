@@ -20,17 +20,29 @@ source-repository head
     type:               git
 
 
-executable dev-scripts
-    hs-source-dirs:     src
-    main-is:            Main.hs
-    other-modules:
+library
+    hs-source-dirs:     lib
+    exposed-modules:    Development.Scripts
+                        Development.Scripts.Action
+    other-modules:      Development.Scripts.Cabal
+                        Development.Scripts.Shake
+                        Development.Scripts.Stack
     build-depends:      base < 5,
                         Cabal,
                         hlint,
                         shake,
                         yaml
     default-language:   Haskell2010
-    default-extensions: DeriveAnyClass
+    other-extensions:   DeriveAnyClass
                         DeriveGeneric
                         RecordWildCards
+    ghc-options:        -Wall
+
+executable dev
+    hs-source-dirs:     exe
+    main-is:            Main.hs
+    build-depends:      base < 5,
+                        dev-scripts,
+                        shake
+    default-language:   Haskell2010
     ghc-options:        -Wall
