@@ -30,5 +30,5 @@ checkVersion :: Action ()
 checkVersion = do
     changelog <- withNeed readMarkdown "changelog.md"
     let (Header 2 xs) = index changelog 1
-    putNormal $ foldMap show xs
+    putNormal $ show (inlinesText xs)
     return ()

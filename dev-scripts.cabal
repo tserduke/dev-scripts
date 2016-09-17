@@ -38,6 +38,7 @@ library
                         text,
                         yaml
     default-language:   Haskell2010
+    default-extensions: LambdaCase
     other-extensions:   DeriveAnyClass
                         DeriveGeneric
                         RecordWildCards
