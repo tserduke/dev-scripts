@@ -33,7 +33,8 @@ lint = do
 
 build :: Action ()
 build = do
-    return ()
+    () <- cmd (Traced "clean") "stack clean"
+    cmd (Traced "build") "stack build --test --bench --haddock --ghc-options \"-Werror\" --no-run-benchmarks"
 
 
 checkChangelog :: Action ()
