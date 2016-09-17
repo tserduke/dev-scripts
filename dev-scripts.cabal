@@ -23,7 +23,6 @@ source-repository head
 library
     hs-source-dirs:     lib
     exposed-modules:    Development.Scripts
-                        Development.Scripts.Action
     other-modules:      Development.Scripts.Cabal
                         Development.Scripts.Markdown
                         Development.Scripts.Shake

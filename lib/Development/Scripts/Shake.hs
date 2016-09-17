@@ -1,6 +1,6 @@
 -- TODO: push upstream
 module Development.Scripts.Shake
-    ( execute
+    ( interactive
     , withNeed
     ) where
 
@@ -11,8 +11,8 @@ import Data.Typeable (cast)
 import Test.HUnit.Lang (HUnitFailure (..))
 
 
-execute :: Action a -> IO ()
-execute = handle handler . shake shakeOptions . action where
+interactive :: Rules () -> IO ()
+interactive = handle handler . shake shakeOptions where
     handler (ShakeException _ _ (SomeException e)) =
         putStrLn $ maybe "Fail" showFailure (cast e)
 
