@@ -1,13 +1,24 @@
 module Development.Scripts.Cabal
-    ( srcDirs
+    ( readCabal
+    , packageVersion
+    , srcDirs
     ) where
 
-import Distribution.PackageDescription (allBuildInfo, hsSourceDirs)
+import Data.Version (Version)
+import Distribution.Package (pkgVersion)
+import Distribution.PackageDescription (GenericPackageDescription, allBuildInfo,
+    hsSourceDirs, package, packageDescription)
 import Distribution.PackageDescription.Configuration (flattenPackageDescription)
 import Distribution.PackageDescription.Parse (readPackageDescription)
 import Distribution.Verbosity (silent)
 
 
-srcDirs :: FilePath -> IO [FilePath]
-srcDirs file = dirs <$> readPackageDescription silent file where
-    dirs = concatMap hsSourceDirs . allBuildInfo . flattenPackageDescription
+readCabal :: FilePath -> IO GenericPackageDescription
+readCabal = readPackageDescription silent
+
+
+packageVersion :: GenericPackageDescription -> Version
+packageVersion = pkgVersion . package . packageDescription
+
+srcDirs :: GenericPackageDescription -> [FilePath]
+srcDirs = concatMap hsSourceDirs . allBuildInfo . flattenPackageDescription
