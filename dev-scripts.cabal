@@ -25,12 +25,17 @@ library
     exposed-modules:    Development.Scripts
                         Development.Scripts.Action
     other-modules:      Development.Scripts.Cabal
+                        Development.Scripts.Markdown
                         Development.Scripts.Shake
                         Development.Scripts.Stack
     build-depends:      base < 5,
                         Cabal,
+                        cheapskate,
+                        containers,
+                        data-default-class,
                         hlint,
                         shake,
+                        text,
                         yaml
     default-language:   Haskell2010
     other-extensions:   DeriveAnyClass
