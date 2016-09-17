@@ -50,7 +50,9 @@ rules = do
 
     phony "build" $ do
         () <- cmd (Traced "clean") "stack clean"
-        cmd (Traced "build") "stack build --test --bench --haddock --ghc-options \"-Werror\" --no-run-benchmarks"
+        () <- cmd (Traced "build") "stack build --test --bench --haddock --ghc-options \"-Werror\" --no-run-benchmarks"
+        () <- cmd "rm -rf src/highlight.js src/style.css"
+        putNormal "Build Successful"
 
     phony "check-changelog" $ do
         [cabalFile] <- getDirectoryFiles "" ["*.cabal"]
