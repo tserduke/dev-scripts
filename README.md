@@ -47,6 +47,7 @@ Builds all projects, tests, benchmarks and documentation failing on warnings and
 stack clean
 stack build --test --bench --haddock --ghc-options "-Werror" --no-run-benchmarks
 ```
+First build with `--haddock` may take some time as it goes through all installed packages!
 
 ### check-changelog
 Checks `changelog.md`.
