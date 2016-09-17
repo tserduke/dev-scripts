@@ -36,7 +36,9 @@ execute name = interactive $ want [name] >> rules
 rules :: Rules ()
 rules = do
     phony "publish" $ do
-        need ["lint", "build", "check-changelog"]
+        need ["lint", "check-changelog"]
+        Stdout files <- cmd "hg st"
+        liftIO $ assertEqual "Uncommited Files" "" files
         putNormal "Published"
 
     phony "lint" $ do
