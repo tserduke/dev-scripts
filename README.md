@@ -8,14 +8,25 @@ The scripts assume [Mercurial] is used as version control system. I use the [Hg-
 ```shell
 hg clone https://github.com/tserduke/dev-scripts.git
 cd dev-scripts
-stack build
+stack install
 ```
 
 ## Usage:
+### Executable
 ```shell
-cd dev-scripts
-stack ghci
-:cd project-dir
+cd some-project
+# Given ~/.local/bin is on the PATH
+dev lint # run lint on current project
+```
+
+### Library
+```shell
+cd some-project
+# Given dev-scripts and some-project are using the same Stack resolver
+stack ghci --no-package-hiding
+```
+```haskell
+import Development.Scripts
 lint -- run lint on current project
 ```
 
