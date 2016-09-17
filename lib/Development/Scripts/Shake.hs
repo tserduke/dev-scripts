@@ -2,22 +2,23 @@
 module Development.Scripts.Shake
     ( execute
     , withNeed
-    , assertEqual
     ) where
 
-import Control.Exception (SomeException, handle)
-import Control.Monad (unless)
-import Development.Shake (Action, action, liftIO, need, shake, shakeOptions, putQuiet)
+import Development.Shake
+
+import Control.Exception (SomeException (..), handle)
+import Data.Typeable (cast)
+import Test.HUnit.Lang (HUnitFailure (..))
 
 
 execute :: Action a -> IO ()
-execute = handle onError . shake shakeOptions . action where
-    onError = const $ putStrLn "Fail" :: SomeException -> IO ()
+execute = handle handler . shake shakeOptions . action where
+    handler (ShakeException _ _ (SomeException e)) =
+        putStrLn $ maybe "Fail" showFailure (cast e)
+
+showFailure :: HUnitFailure -> String
+showFailure (HUnitFailure loc msg) = msg ++ "\n" ++ maybe "" show loc
 
 
 withNeed :: (FilePath -> IO a) -> FilePath -> Action a
 withNeed func file = need [file] >> liftIO (func file)
-
-assertEqual :: (Eq a, Show a) => String -> a -> a -> Action ()
-assertEqual title expected actual = unless (actual == expected) $
-    putQuiet (title ++ "\n" ++ "expected: " ++ show expected ++ "\n but got: " ++ show actual)

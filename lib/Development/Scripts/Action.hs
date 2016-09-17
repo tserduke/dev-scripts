@@ -2,7 +2,7 @@
 
 module Development.Scripts.Action
     ( lint
-    , checkVersion
+    , checkChangelog
     ) where
 
 import Development.Shake
@@ -15,6 +15,7 @@ import Development.Scripts.Stack
 
 import Data.Maybe (fromMaybe)
 import Data.Sequence (index)
+import Test.HUnit (assertEqual)
 import qualified Data.Text as T
 
 
@@ -28,13 +29,13 @@ lint = do
     cmd (Traced "hlint") "stack exec hlint --" dirs
 
 
-checkVersion :: Action ()
-checkVersion = do
+checkChangelog :: Action ()
+checkChangelog = do
     [cabalFile] <- getDirectoryFiles "" ["*.cabal"]
     package <- withNeed readCabal cabalFile
     let version = showVersion $ packageVersion package
     changelog <- withNeed readMarkdown "changelog.md"
     let (Header 2 header) = index changelog 1
     let [version', date] = map T.unpack $ T.words $ inlinesText header
-    assertEqual "Package Version" version version'
+    liftIO $ assertEqual "Package Version" version version'
     return ()
