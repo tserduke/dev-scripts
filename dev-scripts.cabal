@@ -32,7 +32,6 @@ library
                         cheapskate,
                         containers,
                         data-default-class,
-                        HUnit,
                         shake,
                         text,
                         time,
