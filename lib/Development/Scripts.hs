@@ -6,6 +6,7 @@ module Development.Scripts
     , checkChangelog
     , publish
     , rules
+    , runAction
     ) where
 
 import Development.Shake
@@ -31,17 +32,21 @@ publish        = execute "publish"
 execute :: String -> IO ()
 execute name = shake shakeOptions $ want [name] >> rules
 
+runAction :: Action a -> IO ()
+runAction = shake shakeOptions . action
+
 
 rules :: Rules ()
 rules = do
     phony "publish" $ do
-        Stdout files <- cmd "hg st"
+        Stdout files <- cmd "hg status"
         assertEqual "Uncommitted Changes" "" files
         need ["lint", "build", "check-changelog"]
+        () <- cmd (Traced "clean") "hg clean src"
         () <- cmd (Traced "sdist") "stack sdist ."
         () <- cmd (Traced "upload") "stack upload ."
         version <- packageVersion <$> getPackage
-        () <- cmd "hg tag" ("v" ++ version)
+        () <- cmd (Traced "tag") "hg tag" ("v" ++ version)
         putNormal "Published"
 
     phony "lint" $ do
@@ -53,12 +58,11 @@ rules = do
         cmd (Traced "hlint") "stack exec hlint --" dirs
 
     phony "build" $ do
-        () <- cmd (Traced "clean") "stack clean"
+        () <- cmd (Traced "reset") "stack clean"
         () <- cmd (Traced "build") ("stack build --test --bench " ++
             "--ghc-options \"-Werror\" --no-run-benchmarks")
         name <- packageName <$> getPackage
         () <- cmd (Traced "haddock") "stack build --haddock --ghc-options \"-Werror\"" name
-        () <- cmd "rm -rf src/highlight.js src/style.css"
         putNormal "Build Successful"
 
     phony "check-changelog" $ do
