@@ -40,7 +40,7 @@ rules = do
         need ["lint", "build", "check-changelog"]
         () <- cmd (Traced "sdist") "stack sdist ."
         () <- cmd (Traced "upload") "stack upload ."
-        version <- getVersion
+        version <- packageVersion <$> getPackage
         () <- cmd "hg tag" ("v" ++ version)
         putNormal "Published"
 
@@ -56,12 +56,13 @@ rules = do
         () <- cmd (Traced "clean") "stack clean"
         () <- cmd (Traced "build") ("stack build --test --bench " ++
             "--ghc-options \"-Werror\" --no-run-benchmarks")
-        () <- cmd (Traced "haddock") "stack build --haddock ."
+        name <- packageName <$> getPackage
+        () <- cmd (Traced "haddock") "stack build --haddock --ghc-options \"-Werror\"" name
         () <- cmd "rm -rf src/highlight.js src/style.css"
         putNormal "Build Successful"
 
     phony "check-changelog" $ do
-        version <- getVersion
+        version <- packageVersion <$> getPackage
         changelog <- withNeed readMarkdown "changelog.md"
         let (Header 2 header) = index changelog 1
         let [version', date] = map T.unpack $ T.words $ inlinesText header
@@ -71,8 +72,7 @@ rules = do
         assertEqual "Changelog Date" today date
         putNormal "Changelog OK"
 
-getVersion :: Action String
-getVersion = do
-    [cabalFile] <- getDirectoryFiles "" ["*.cabal"]
-    package <- withNeed readCabal cabalFile
-    return $ showVersion $ packageVersion package
+getPackage :: Action GenericPackageDescription
+getPackage = do
+    [file] <- getDirectoryFiles "" ["*.cabal"]
+    withNeed readCabal file

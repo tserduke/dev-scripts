@@ -1,12 +1,13 @@
 module Development.Scripts.Cabal
-    ( readCabal
+    ( GenericPackageDescription
+    , readCabal
+    , packageName
     , packageVersion
-    , showVersion
     , srcDirs
     ) where
 
-import Data.Version (Version, showVersion)
-import Distribution.Package (pkgVersion)
+import Data.Version (showVersion)
+import Distribution.Package (PackageIdentifier, pkgName, pkgVersion, unPackageName)
 import Distribution.PackageDescription (GenericPackageDescription, allBuildInfo,
     hsSourceDirs, package, packageDescription)
 import Distribution.PackageDescription.Configuration (flattenPackageDescription)
@@ -18,8 +19,15 @@ readCabal :: FilePath -> IO GenericPackageDescription
 readCabal = readPackageDescription silent
 
 
-packageVersion :: GenericPackageDescription -> Version
-packageVersion = pkgVersion . package . packageDescription
+packageName :: GenericPackageDescription -> String
+packageName = unPackageName . pkgName . toPackage
+
+packageVersion :: GenericPackageDescription -> String
+packageVersion = showVersion . pkgVersion . toPackage
+
+toPackage :: GenericPackageDescription -> PackageIdentifier
+toPackage = package . packageDescription
+
 
 srcDirs :: GenericPackageDescription -> [FilePath]
 srcDirs = concatMap hsSourceDirs . allBuildInfo . flattenPackageDescription

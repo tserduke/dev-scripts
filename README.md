@@ -46,7 +46,8 @@ Builds all projects, tests, benchmarks and documentation failing on warnings and
 ```shell
 stack clean
 stack build --test --bench --ghc-options "-Werror" --no-run-benchmarks
-stack build --haddock package-name
+# Build haddock for the root package only without going into full rebuild.
+stack build --haddock --ghc-options "-Werror" package-name
 rm -rf src/highlight.js src/style.css
 ```
 First build with `--haddock` may take some time as it goes through all installed packages!
