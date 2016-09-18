@@ -57,18 +57,22 @@ Checks `changelog.md`.
 1. Checks the latest version number equals the one in the root cabal file.
 2. Checks the date of the latest version is current.
 
+### hackage-docs
+Uploads locally generated documentation to Hackage for the root package. Port of the following [script][hackage-docs].
+
 ### publish
 If all is good publishes and tags the release.
 
 1. Checks if there are no uncommitted changes. Add `/.shake` to `.gitignore`.
-1. Checks [lint](#lint), [build](#check-build) and [changelog](#check-changelog).
+1. Runs [lint](#lint), [build](#check-build) and [check-changelog](#check-changelog).
 1. `hg clean src` - cleanup after Haddock
 1. `stack sdist`
 1. `stack upload .`
 1. `hg tag vx.y.z` - tags the repository with current version number
-
+1. Runs [hackage-docs](#hackage-docs).
 
 
 [Mercurial]: https://www.mercurial-scm.org
 [Hg-Git]: https://hg-git.github.io
 [HLint]: https://github.com/ndmitchell/hlint#readme
+[hackage-docs]: https://github.com/phadej/binary-orphans/blob/3f106567260c1a9bb3063d49948201675876ad12/hackage-docs.sh
