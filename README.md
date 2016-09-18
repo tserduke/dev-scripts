@@ -46,7 +46,7 @@ Builds all projects, tests, benchmarks and documentation failing on warnings and
 ```shell
 stack clean
 stack build --test --bench --ghc-options "-Werror" --no-run-benchmarks
-# Build documentation for the root package only without going into full rebuild.
+# Build documentation for the root package only without going into full rebuild:
 stack build --haddock --ghc-options "-Werror" package-name
 ```
 First build with `--haddock` may take some time as it goes through all installed packages!

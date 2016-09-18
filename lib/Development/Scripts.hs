@@ -59,10 +59,11 @@ rules = do
 
     phony "build" $ do
         () <- cmd (Traced "reset") "stack clean"
-        () <- cmd (Traced "build") ("stack build --test --bench " ++
-            "--ghc-options \"-Werror\" --no-run-benchmarks")
+        () <- cmd (Traced "build") "stack build --test --bench"
+            "--ghc-options \"-Werror\" --no-run-benchmarks"
         name <- packageName <$> getPackage
-        () <- cmd (Traced "haddock") "stack build --haddock --ghc-options \"-Werror\"" name
+        () <- cmd (Traced "haddock") "stack build --haddock"
+            "--ghc-options \"-Werror\"" name
         putNormal "Build Successful"
 
     phony "check-changelog" $ do
