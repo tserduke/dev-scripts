@@ -35,10 +35,10 @@ execute name = shake shakeOptions $ want [name] >> rules
 rules :: Rules ()
 rules = do
     phony "publish" $ do
-        need ["lint", "build", "check-changelog"]
         Stdout files <- cmd "hg st"
-        assertEqual "Uncommited Files" "" files
-        () <- cmd (Traced "sdist") "stack sdist"
+        assertEqual "Uncommitted Changes" "" files
+        need ["lint", "build", "check-changelog"]
+        () <- cmd (Traced "sdist") "stack sdist ."
         () <- cmd (Traced "upload") "stack upload ."
         version <- getVersion
         () <- cmd "hg tag" ("v" ++ version)
@@ -54,8 +54,9 @@ rules = do
 
     phony "build" $ do
         () <- cmd (Traced "clean") "stack clean"
-        () <- cmd (Traced "build") ("stack build --test --bench --haddock " ++
+        () <- cmd (Traced "build") ("stack build --test --bench " ++
             "--ghc-options \"-Werror\" --no-run-benchmarks")
+        () <- cmd (Traced "haddock") "stack build --haddock ."
         () <- cmd "rm -rf src/highlight.js src/style.css"
         putNormal "Build Successful"
 

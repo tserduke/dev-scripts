@@ -45,7 +45,8 @@ Lints all Haskell sources it could find.
 Builds all projects, tests, benchmarks and documentation failing on warnings and runs tests.
 ```shell
 stack clean
-stack build --test --bench --haddock --ghc-options "-Werror" --no-run-benchmarks
+stack build --test --bench --ghc-options "-Werror" --no-run-benchmarks
+stack build --haddock package-name
 rm -rf src/highlight.js src/style.css
 ```
 First build with `--haddock` may take some time as it goes through all installed packages!
@@ -53,14 +54,14 @@ First build with `--haddock` may take some time as it goes through all installed
 ### check-changelog
 Checks `changelog.md`.
 
-1. Checks the latest version number equals the one in root cabal file.
-2. Checks the date of latest version is current.
+1. Checks the latest version number equals the one in the root cabal file.
+2. Checks the date of the latest version is current.
 
 ### publish
 If all is good publishes and tags the release.
 
 1. Checks [lint](#lint), [build](#check-build) and [changelog](#check-changelog).
-1. Checks if there are no uncommitted files. Add `/.shake` to `.gitignore`.
+1. Checks if there are no uncommitted changes. Add `/.shake` to `.gitignore`.
 1. `stack sdist`
 1. `stack upload .`
 1. `hg tag vx.y.z` - tags the repository with current version number.
