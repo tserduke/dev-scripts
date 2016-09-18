@@ -3,7 +3,10 @@ Scripts for support of Haskell projects development
 
 
 ## Requirements
-The scripts assume [Mercurial] is used as version control system. I use the [Hg-Git] plugin for seamless integration with Git.
+* [Mercurial] as version control system. I use the [Hg-Git] plugin for seamless integration with Git.
+* [Stack]
+* [Stackage] >= 7.0 for [`hackage-docs`](#hackage-docs)
+
 
 ## Installation
 ```shell
@@ -64,15 +67,17 @@ Uploads locally generated documentation to Hackage for the root package. Port of
 If all is good publishes and tags the release.
 
 1. Checks if there are no uncommitted changes. Add `/.shake` to `.gitignore`.
-1. Runs [lint](#lint), [build](#check-build) and [check-changelog](#check-changelog).
+1. Runs [`lint`](#lint), [`build`](#check-build) and [`check-changelog`](#check-changelog).
 1. `hg clean src` - cleanup after Haddock
 1. `stack sdist`
 1. `stack upload .`
 1. `hg tag vx.y.z` - tags the repository with current version number
-1. Runs [hackage-docs](#hackage-docs).
+1. Runs [`hackage-docs`](#hackage-docs).
 
 
 [Mercurial]: https://www.mercurial-scm.org
 [Hg-Git]: https://hg-git.github.io
+[Stack]: https://www.haskellstack.org
+[Stackage]: https://www.stackage.org/lts-7
 [HLint]: https://github.com/ndmitchell/hlint#readme
-[hackage-docs]: https://github.com/phadej/binary-orphans/blob/3f106567260c1a9bb3063d49948201675876ad12/hackage-docs.sh
+[hackage-docs]: https://github.com/ekmett/lens/blob/67ac5db4ee24364c435e6e9fbe29fe429bce8d0c/scripts/hackage-docs.sh

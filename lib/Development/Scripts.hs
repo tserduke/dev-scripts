@@ -47,6 +47,7 @@ rules = do
         () <- cmd (Traced "upload") "stack upload ."
         version <- packageVersion <$> getPackage
         () <- cmd (Traced "tag") "hg tag" ("v" ++ version)
+        need ["hackage-docs"]
         putNormal "Published"
 
     phony "lint" $ do
@@ -76,6 +77,11 @@ rules = do
         let today = formatTime defaultTimeLocale "(%Y-%m-%d)" time
         assertEqual "Changelog Date" today date
         putNormal "Changelog OK"
+
+    phony "hackage-docs" $ withTempDir $ \temp -> do
+        pkgId <- packageId <$> getPackage
+        putNormal pkgId
+        putNormal "Docs Uploaded"
 
 getPackage :: Action GenericPackageDescription
 getPackage = do

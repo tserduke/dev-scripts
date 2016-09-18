@@ -1,6 +1,7 @@
 module Development.Scripts.Cabal
     ( GenericPackageDescription
     , readCabal
+    , packageId
     , packageName
     , packageVersion
     , srcDirs
@@ -19,10 +20,10 @@ readCabal :: FilePath -> IO GenericPackageDescription
 readCabal = readPackageDescription silent
 
 
-packageName :: GenericPackageDescription -> String
-packageName = unPackageName . pkgName . toPackage
+packageId, packageName, packageVersion :: GenericPackageDescription -> String
+packageId x = packageName x ++ "-" ++ packageVersion x
 
-packageVersion :: GenericPackageDescription -> String
+packageName = unPackageName . pkgName . toPackage
 packageVersion = showVersion . pkgVersion . toPackage
 
 toPackage :: GenericPackageDescription -> PackageIdentifier
