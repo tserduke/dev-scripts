@@ -38,18 +38,19 @@ runAction :: Action a -> IO ()
 runAction = shake shakeOptions . action
 
 
+
 rules :: Rules ()
 rules = do
     phony "publish" $ do
         Stdout files <- cmd "hg status"
         assertEqual "Uncommitted Changes" "" files
         need ["lint", "build", "check-changelog"]
-        () <- cmd (Traced "clean") "hg clean src"
         () <- cmd (Traced "sdist") "stack sdist ."
         () <- cmd (Traced "upload") "stack upload ."
         version <- packageVersion <$> getPackage
         () <- cmd (Traced "tag") "hg tag" ("v" ++ version)
         need ["hackage-docs"]
+        () <- cmd (Traced "clean") "hg clean src"
         putNormal "Published"
 
     phony "lint" $ do
@@ -80,17 +81,25 @@ rules = do
         assertEqual "Changelog Date" today date
         putNormal "Changelog OK"
 
+
     phony "hackage-docs" $ withTempDir $ \temp -> do
         let stackPath name = fromStdout <$> cmd ("stack path --" ++ name)
         path <- AddEnv "PATH" <$> stackPath "bin-path"
-        let buildDir dir = "--builddir=" ++ temp </> dir
-        putNormal "Configure using Stack databases"
+        let buildDir = "--builddir=" ++ temp
+
         snapshot <- stackPath "snapshot-pkg-db"
         local    <- stackPath "local-pkg-db"
         let pdb = ("--package-db=" ++)
-        () <- cmd (RemEnv "GHC_PACKAGE_PATH") path "cabal configure -v2"
-            (buildDir "dist") (pdb "clear") (pdb "global") (pdb snapshot) (pdb local)
+        () <- cmd (RemEnv "GHC_PACKAGE_PATH") path "cabal configure" buildDir
+            (pdb "clear") (pdb "global") (pdb snapshot) (pdb local)
+
+        () <- cmd path "cabal haddock --for-hackage" buildDir
+            "--haddock-option=--hyperlinked-source"
+        pkgId <- packageId <$> getPackage
+        () <- cmd path "cabal upload --documentation" (temp </> pkgId ++ "-docs.tar.gz")
+
         putNormal "Docs uploaded to Hackage"
+
 
 getPackage :: Action GenericPackageDescription
 getPackage = do

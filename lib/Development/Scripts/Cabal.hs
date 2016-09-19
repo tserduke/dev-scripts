@@ -23,11 +23,11 @@ readCabal = readPackageDescription silent
 packageId, packageName, packageVersion :: GenericPackageDescription -> String
 packageId x = packageName x ++ "-" ++ packageVersion x
 
-packageName = unPackageName . pkgName . toPackage
-packageVersion = showVersion . pkgVersion . toPackage
+packageName = unPackageName . pkgName . getPackage
+packageVersion = showVersion . pkgVersion . getPackage
 
-toPackage :: GenericPackageDescription -> PackageIdentifier
-toPackage = package . packageDescription
+getPackage :: GenericPackageDescription -> PackageIdentifier
+getPackage = package . packageDescription
 
 
 srcDirs :: GenericPackageDescription -> [FilePath]
