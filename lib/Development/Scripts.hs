@@ -65,8 +65,11 @@ rules = do
         let patterns = map (</> "*.cabal") $ fromMaybe ["."] packages
         cabalFiles <- getDirectoryFiles "" patterns
         cabals <- mapM (withNeed readCabal) cabalFiles
-        let dirs = map ("." </>) $ concatMap srcDirs cabals
-        cmd (Traced "hlint") (WithStdout True) "stack exec hlint --" dirs
+        let roots = map takeDirectory cabalFiles
+        let srcs = map srcDirs cabals
+        let paths = concat $ zipWith (\dir -> map (dir </>)) roots srcs
+        putNormal $ "Linting: " ++ unwords paths
+        cmd (Traced "hlint") (WithStdout True) "stack exec hlint --" paths
 
 
     phony "build" $ do
