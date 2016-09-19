@@ -7,10 +7,11 @@ module Development.Scripts.Cabal
     , srcDirs
     ) where
 
+import Data.List (nub)
+import Data.Maybe (maybeToList)
 import Data.Version (showVersion)
 import Distribution.Package (PackageIdentifier, pkgName, pkgVersion, unPackageName)
-import Distribution.PackageDescription (GenericPackageDescription, allBuildInfo,
-    hsSourceDirs, package, packageDescription)
+import Distribution.PackageDescription hiding (allBuildInfo)
 import Distribution.PackageDescription.Configuration (flattenPackageDescription)
 import Distribution.PackageDescription.Parse (readPackageDescription)
 import Distribution.Verbosity (silent)
@@ -31,4 +32,12 @@ getPackage = package . packageDescription
 
 
 srcDirs :: GenericPackageDescription -> [FilePath]
-srcDirs = concatMap hsSourceDirs . allBuildInfo . flattenPackageDescription
+srcDirs = nub . concatMap hsSourceDirs . allBuildInfo . flattenPackageDescription
+
+allBuildInfo :: PackageDescription -> [BuildInfo]
+allBuildInfo pkg = concat
+    [ map libBuildInfo       $ maybeToList $ library pkg
+    , map buildInfo          $ executables           pkg
+    , map testBuildInfo      $ testSuites            pkg
+    , map benchmarkBuildInfo $ benchmarks            pkg
+    ]
