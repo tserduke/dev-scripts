@@ -44,14 +44,21 @@ rules = do
     phony "publish" $ do
         Stdout files <- cmd "hg status"
         assertEqual "Uncommitted Changes" "" files
+
         need ["lint", "build", "check-changelog"]
         () <- cmd (Traced "sdist") "stack sdist ."
         () <- cmd (Traced "upload") "stack upload ."
         need ["hackage-docs"]
         () <- cmd (Traced "clean") "hg clean src"
+
+        Stdout bookmark <- cmd "hg bookmark"
         version <- packageVersion <$> getPackage
         () <- cmd (Traced "tag") "hg tag" ("v" ++ version)
+        () <- cmd "hg bookmark" (words bookmark !! 1)
+        () <- cmd (Traced "push") "hg push"
+
         putNormal "Published"
+
 
     phony "lint" $ do
         StackConfig {..} <- withNeed readYaml "stack.yaml"
@@ -61,6 +68,7 @@ rules = do
         let dirs = concatMap srcDirs cabals
         cmd (Traced "hlint") "stack exec hlint --" dirs
 
+
     phony "build" $ do
         () <- cmd (Traced "reset") "stack clean"
         () <- cmd (Traced "build") "stack build --test --bench"
@@ -69,6 +77,7 @@ rules = do
         () <- cmd (Traced "haddock") "stack build --haddock"
             "--ghc-options \"-Werror\"" name
         putNormal "Build Successful"
+
 
     phony "check-changelog" $ do
         version <- packageVersion <$> getPackage

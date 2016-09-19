@@ -71,8 +71,10 @@ If all is good publishes and tags the release.
 1. `stack sdist`
 1. `stack upload .`
 1. Runs [`hackage-docs`](#hackage-docs).
-1. `hg clean src` - cleanup after Haddock
-1. `hg tag vx.y.z` - tags the repository with current version number
+1. `hg clean src` - cleanups after Haddock.
+1. `hg tag vx.y.z` - tags the repository with current version number.
+1. Gets back lost hg bookmark.
+1. `hg push`
 
 
 [Mercurial]: https://www.mercurial-scm.org
