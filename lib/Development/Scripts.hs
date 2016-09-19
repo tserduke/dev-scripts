@@ -47,10 +47,10 @@ rules = do
         need ["lint", "build", "check-changelog"]
         () <- cmd (Traced "sdist") "stack sdist ."
         () <- cmd (Traced "upload") "stack upload ."
-        version <- packageVersion <$> getPackage
-        () <- cmd (Traced "tag") "hg tag" ("v" ++ version)
         need ["hackage-docs"]
         () <- cmd (Traced "clean") "hg clean src"
+        version <- packageVersion <$> getPackage
+        () <- cmd (Traced "tag") "hg tag" ("v" ++ version)
         putNormal "Published"
 
     phony "lint" $ do

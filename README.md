@@ -68,11 +68,11 @@ If all is good publishes and tags the release.
 
 1. Checks if there are no uncommitted changes. Add `/.shake` to `.gitignore`.
 1. Runs [`lint`](#lint), [`build`](#check-build) and [`check-changelog`](#check-changelog).
-1. `hg clean src` - cleanup after Haddock
 1. `stack sdist`
 1. `stack upload .`
-1. `hg tag vx.y.z` - tags the repository with current version number
 1. Runs [`hackage-docs`](#hackage-docs).
+1. `hg clean src` - cleanup after Haddock
+1. `hg tag vx.y.z` - tags the repository with current version number
 
 
 [Mercurial]: https://www.mercurial-scm.org
