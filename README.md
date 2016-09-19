@@ -61,7 +61,7 @@ Checks `changelog.md`.
 2. Checks the date of the latest version is current.
 
 ### hackage-docs
-Uploads locally generated documentation to Hackage for the root package. Port of the following [script][hackage-docs].
+Uploads locally generated documentation to Hackage for the root package. Port of the following scripts - [1][hackage-docs-1] and [2][hackage-docs-2].
 
 ### publish
 If all is good publishes and tags the release.
@@ -80,4 +80,5 @@ If all is good publishes and tags the release.
 [Stack]: https://www.haskellstack.org
 [Stackage]: https://www.stackage.org/lts-7
 [HLint]: https://github.com/ndmitchell/hlint#readme
-[hackage-docs]: https://github.com/ekmett/lens/blob/67ac5db4ee24364c435e6e9fbe29fe429bce8d0c/scripts/hackage-docs.sh
+[hackage-docs-1]: https://github.com/ekmett/lens/blob/67ac5db4ee24364c435e6e9fbe29fe429bce8d0c/scripts/hackage-docs.sh
+[hackage-docs-2]: https://github.com/phadej/binary-orphans/blob/3f106567260c1a9bb3063d49948201675876ad12/hackage-docs.sh

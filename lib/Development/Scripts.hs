@@ -4,6 +4,7 @@ module Development.Scripts
     ( lint
     , build
     , checkChangelog
+    , hackageDocs
     , publish
     , rules
     , runAction
@@ -23,10 +24,11 @@ import Data.Time (defaultTimeLocale, formatTime, getCurrentTime)
 import qualified Data.Text as T
 
 
-lint, build, checkChangelog, publish :: IO ()
+lint, build, checkChangelog, hackageDocs, publish :: IO ()
 lint           = execute "lint"
 build          = execute "build"
 checkChangelog = execute "check-changelog"
+hackageDocs    = execute "hackage-docs"
 publish        = execute "publish"
 
 execute :: String -> IO ()
@@ -79,9 +81,16 @@ rules = do
         putNormal "Changelog OK"
 
     phony "hackage-docs" $ withTempDir $ \temp -> do
-        pkgId <- packageId <$> getPackage
-        putNormal pkgId
-        putNormal "Docs Uploaded"
+        let stackPath name = fromStdout <$> cmd ("stack path --" ++ name)
+        path <- AddEnv "PATH" <$> stackPath "bin-path"
+        let buildDir dir = "--builddir=" ++ temp </> dir
+        putNormal "Configure using Stack databases"
+        snapshot <- stackPath "snapshot-pkg-db"
+        local    <- stackPath "local-pkg-db"
+        let pdb = ("--package-db=" ++)
+        () <- cmd (RemEnv "GHC_PACKAGE_PATH") path "cabal configure -v2"
+            (buildDir "dist") (pdb "clear") (pdb "global") (pdb snapshot) (pdb local)
+        putNormal "Docs uploaded to Hackage"
 
 getPackage :: Action GenericPackageDescription
 getPackage = do
