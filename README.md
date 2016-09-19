@@ -17,21 +17,18 @@ stack install
 
 
 ## Usage:
-### Executable
+### Command Line
 ```shell
 cd some-project
 # Given ~/.local/bin is on the PATH
 dev lint # run lint on current project
 ```
 
-### Library
+### GHCi
 ```shell
 cd some-project
-# Given dev-scripts and some-project are using the same Stack resolver
+# Given dev-scripts library is somehow installed
 stack ghci --no-package-hiding
-```
-```haskell
-import Development.Scripts
 lint -- run lint on current project
 ```
 
