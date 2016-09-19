@@ -10,14 +10,13 @@ author:                 Taras Serduke
 maintainer:             taras.serduke@gmail.com
 copyright:              2016 Taras Serduke
 category:               Development
-stability:              experimental
 build-type:             Simple
 cabal-version:          >= 1.10
 extra-source-files:     README.md
 
 source-repository head
-    location:           https://github.com/tserduke/dev-scripts
     type:               git
+    location:           https://github.com/tserduke/dev-scripts.git
 
 
 library
